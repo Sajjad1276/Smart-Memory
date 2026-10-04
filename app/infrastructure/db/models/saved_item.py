@@ -22,6 +22,11 @@ class SavedItemModel(Base):
         index=True,
         nullable=False,
     )
+    storage_chat_id: Mapped[int] = mapped_column(
+        BigInteger,
+        nullable=False,
+        index=True,
+    )
     storage_message_id: Mapped[int] = mapped_column(
         BigInteger,
         nullable=False,

@@ -42,6 +42,7 @@ class SearchMemoryService:
         hashes = self._hasher.token_keys(user_key, tokenize(query))
         items = await item_repo.search(
             user_id=user.id,
+            storage_chat_id=user.storage_chat_id,
             token_hashes=hashes,
             limit=max(1, min(limit, 20)),
         )
@@ -50,7 +51,7 @@ class SearchMemoryService:
             for item in items:
                 await self._storage.copy_out(
                     target_chat_id=message.chat.id,
-                    storage_chat_id=user.storage_chat_id,
+                    storage_chat_id=item.storage_chat_id,
                     storage_message_id=item.storage_message_id,
                 )
         except TelegramAPIError as exc:

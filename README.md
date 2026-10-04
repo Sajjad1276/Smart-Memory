@@ -15,7 +15,7 @@ The bot must see an incoming message to process it. This project does not claim 
 The persistent application database stores:
 
 - a pseudonymous user key derived with HMAC-SHA256
-- the user's private storage channel ID
+- the private storage channel ID associated with each saved item
 - the storage message ID
 - coarse content/source metadata
 - HMAC-scoped search token indexes
@@ -26,9 +26,11 @@ Search token hashes are scoped by user key. The same token therefore does not pr
 
 ## Storage setup
 
-The Telegram Bot API does not provide a bot operation for creating a channel. The user creates a private channel, adds the bot as an administrator with permission to post, and runs `/connect_storage`. The user then forwards one post from that channel to the bot. The bot verifies that the forwarded chat is a private channel and that both the bot and user are administrators.
+The Telegram Bot API does not provide a bot operation for creating a channel. The user creates a private channel, remains the channel owner, adds the bot as an administrator with permission to post, and runs `/connect_storage`. The user then forwards one post from that channel to the bot. The bot verifies the forwarded chat is a private channel and that the bot has posting rights and the forwarding user is the channel owner.
 
-Storage is user-owned. `/disconnect_storage` removes the application's reference to the channel. It does not delete the user's Telegram content.
+Each saved item records its storage channel reference. This prevents a later channel change from silently making old records point at a different storage location.
+
+Storage is user-owned. `/disconnect_storage` removes the application's current storage association. It does not delete the user's Telegram content.
 
 ## Commands
 
@@ -66,6 +68,20 @@ cp .env.example .env
 alembic upgrade head
 python -m app.main
 ```
+
+## Railway
+
+The Railway application service uses the repository's Dockerfile and runs `alembic upgrade head` as a pre-deploy command.
+
+The application service needs exactly three variables:
+
+```text
+BOT_TOKEN=
+DATABASE_URL=${{Postgres.DATABASE_URL}}
+PRIVACY_HASH_KEY=
+```
+
+The Postgres service is private to the Railway project. No Redis or object-storage service is part of the foundation.
 
 ## Architecture
 

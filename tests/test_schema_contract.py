@@ -12,6 +12,7 @@ def test_privacy_first_schema_has_no_raw_content_column() -> None:
     assert "caption" not in saved_columns
     assert "file_id" not in saved_columns
     assert "storage_message_id" in saved_columns
+    assert "storage_chat_id" in saved_columns
 
 
 def test_user_storage_is_user_owned_and_optional() -> None:
@@ -20,6 +21,11 @@ def test_user_storage_is_user_owned_and_optional() -> None:
     assert "storage_setup_pending" in {
         column.name for column in UserModel.__table__.columns
     }
+
+
+def test_saved_item_storage_is_required() -> None:
+    storage_column = SavedItemModel.__table__.c.storage_chat_id
+    assert storage_column.nullable is False
 
 
 def test_only_three_persistent_tables_exist_in_foundation() -> None:

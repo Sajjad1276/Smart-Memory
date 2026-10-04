@@ -76,11 +76,11 @@ class StorageSetupService:
         ):
             raise StorageSetupError("ربات باید در کانال ذخیره‌سازی ادمین باشد.")
 
-        if not await self._storage.verify_user_admin(
+        if not await self._storage.verify_user_owner(
             storage_chat_id=storage_chat_id,
             user_id=message.from_user.id,
         ):
-            raise StorageSetupError("شما باید در کانال ذخیره‌سازی ادمین باشید.")
+            raise StorageSetupError("فضای ذخیره‌سازی باید توسط خود شما ساخته شده باشد.")
 
         await user_repo.set_storage_chat(user, storage_chat_id)
         await self._session.commit()

@@ -2,7 +2,7 @@ from collections.abc import Sequence
 from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import delete, func, select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.infrastructure.db.models import SavedItemModel, SearchTokenModel
@@ -17,6 +17,7 @@ class SavedItemRepository:
         *,
         user_id: UUID,
         event_key: bytes,
+        storage_chat_id: int,
         storage_message_id: int,
         content_type: str,
         source_type: str,
@@ -26,6 +27,7 @@ class SavedItemRepository:
         item = SavedItemModel(
             user_id=user_id,
             event_key=event_key,
+            storage_chat_id=storage_chat_id,
             storage_message_id=storage_message_id,
             content_type=content_type,
             source_type=source_type,
@@ -52,6 +54,7 @@ class SavedItemRepository:
         self,
         *,
         user_id: UUID,
+        storage_chat_id: int,
         token_hashes: Sequence[bytes],
         limit: int = 10,
     ) -> list[SavedItemModel]:
@@ -64,6 +67,7 @@ class SavedItemRepository:
             .join(SearchTokenModel, SearchTokenModel.item_id == SavedItemModel.id)
             .where(
                 SavedItemModel.user_id == user_id,
+                SavedItemModel.storage_chat_id == storage_chat_id,
                 SearchTokenModel.token_hash.in_(hashes),
             )
             .group_by(SavedItemModel.id)

@@ -4,7 +4,11 @@ from aiogram.exceptions import TelegramAPIError
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.application.services.message_inspector import get_content_type, get_searchable_text, get_source_type
+from app.application.services.message_inspector import (
+    get_content_type,
+    get_searchable_text,
+    get_source_type,
+)
 from app.infrastructure.db.repositories.saved_item_repository import SavedItemRepository
 from app.infrastructure.db.repositories.user_repository import UserRepository
 from app.infrastructure.security.privacy import PrivacyHasher, tokenize
@@ -65,6 +69,7 @@ class SaveMessageService:
         await item_repo.create(
             user_id=user.id,
             event_key=event_key,
+            storage_chat_id=user.storage_chat_id,
             storage_message_id=storage_message_id,
             content_type=get_content_type(message).value,
             source_type=get_source_type(message).value,

@@ -40,14 +40,14 @@ class TelegramStorage:
             return True
         return member.status == "administrator" and member.can_post_messages is not False
 
-    async def verify_user_admin(
+    async def verify_user_owner(
         self,
         *,
         storage_chat_id: int,
         user_id: int,
     ) -> bool:
         member = await self._bot.get_chat_member(storage_chat_id, user_id)
-        return member.status in {"administrator", "creator"}
+        return member.status == "creator"
 
     async def verify_private_channel(self, storage_chat_id: int) -> bool:
         chat = await self._bot.get_chat(storage_chat_id)
